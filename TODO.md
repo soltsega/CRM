@@ -6,9 +6,9 @@
 
 ## Phase 2: Backend Development
 - [ ] Set up backend Express server
-	- [ ] Initialize Node.js project and install dependencies (express, mongoose, cors, dotenv, etc.)
-	- [ ] Configure environment variables
-	- [ ] Set up basic Express server structure (app.js)
+	- [x] Initialize Node.js project and install dependencies (express, mongoose, cors, dotenv, etc.)
+	- [x] Configure environment variables
+	- [x] Set up basic Express server structure (app.js)
 - [ ] Design MongoDB lead schema
 	- [ ] Define Lead model (name, email, source, status, notes, timestamps)
 	- [ ] Create Mongoose schema and model file
