@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
 import Sidebar from '../components/Sidebar';
+import LeadsView from '../components/LeadsView';
+import AnalyticsView from '../components/AnalyticsView';
+import SettingsView from '../components/SettingsView';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Plus, Filter, MoreHorizontal, LayoutDashboard, Clock, MessageSquare, CheckCircle } from 'lucide-react';
+import { Search, Plus, Filter, MoreHorizontal, LayoutDashboard, Clock, MessageSquare, CheckCircle, X } from 'lucide-react';
 
 const Dashboard = () => {
     const [leads, setLeads] = useState([]);
@@ -10,20 +13,39 @@ const Dashboard = () => {
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState('All');
     const [activeView, setActiveView] = useState('dashboard');
+    const [showAddLead, setShowAddLead] = useState(false);
+    const [newLead, setNewLead] = useState({ name: '', email: '', source: 'Website Form' });
+    const [addingLead, setAddingLead] = useState(false);
+
+    const fetchLeads = useCallback(async () => {
+        try {
+            const res = await api.get('/leads');
+            setLeads(res.data.data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchLeads = async () => {
-            try {
-                const res = await api.get('/leads');
-                setLeads(res.data.data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchLeads();
-    }, []);
+    }, [fetchLeads]);
+
+    const handleAddLead = async (e) => {
+        e.preventDefault();
+        setAddingLead(true);
+        try {
+            await api.post('/leads', newLead);
+            setNewLead({ name: '', email: '', source: 'Website Form' });
+            setShowAddLead(false);
+            fetchLeads();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setAddingLead(false);
+        }
+    };
 
     const filteredLeads = leads.filter(lead => {
         const matchesSearch = lead.name.toLowerCase().includes(search.toLowerCase()) || 
@@ -33,134 +55,147 @@ const Dashboard = () => {
     });
 
     const stats = [
-        { label: 'Total Leads', count: leads.length, icon: LayoutDashboard, color: 'text-indigo-400' },
-        { label: 'Pending', count: leads.filter(l => l.status === 'New').length, icon: Clock, color: 'text-warning' },
-        { label: 'Contacted', count: leads.filter(l => l.status === 'Contacted').length, icon: MessageSquare, color: 'text-indigo-400' },
-        { label: 'Converted', count: leads.filter(l => l.status === 'Converted').length, icon: CheckCircle, color: 'text-success' },
+        { label: 'Total Leads', count: leads.length, icon: LayoutDashboard, color: '#818cf8' },
+        { label: 'Pending', count: leads.filter(l => l.status === 'New').length, icon: Clock, color: '#f59e0b' },
+        { label: 'Contacted', count: leads.filter(l => l.status === 'Contacted').length, icon: MessageSquare, color: '#818cf8' },
+        { label: 'Converted', count: leads.filter(l => l.status === 'Converted').length, icon: CheckCircle, color: '#10b981' },
     ];
 
-    const renderContent = () => {
-        if (activeView !== 'dashboard') {
-            return (
-                <div className="flex flex-col items-center justify-center py-24 text-center">
-                    <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center mb-4 text-text-dim">
-                        <Clock size={32} />
-                    </div>
-                    <h2 className="text-xl font-bold mb-2 capitalize">{activeView} View</h2>
-                    <p className="text-text-secondary max-w-sm">This module is currently under development. Stay tuned for updates!</p>
-                    <button onClick={() => setActiveView('dashboard')} className="btn btn-primary mt-6">Return to Dashboard</button>
-                </div>
-            );
-        }
+    const headerConfig = {
+        dashboard: { title: 'Lead Overview', sub: 'Manage and track your customer pipeline.' },
+        leads: { title: 'Lead Management', sub: 'Update statuses and add follow-up notes to your leads.' },
+        analytics: { title: 'Analytics', sub: 'Track your conversion metrics and lead sources.' },
+        settings: { title: 'Settings', sub: 'Manage your profile, security, and notification preferences.' },
+    };
 
-        return (
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-            >
-                {/* Stats */}
-                <div className="stats-grid mb-10">
-                    {stats.map((stat, idx) => (
-                        <motion.div 
-                            key={idx}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className="card p-5"
-                        >
-                            <p className="text-text-dim text-[10px] font-bold uppercase tracking-widest mb-1">{stat.label}</p>
-                            <h3 className={`text-3xl font-bold ${stat.color}`}>{stat.count}</h3>
-                        </motion.div>
-                    ))}
-                </div>
+    const currentHeader = headerConfig[activeView] || headerConfig.dashboard;
 
-                {/* Table Area */}
-                <div className="card p-6">
-                    <div className="filter-bar">
-                        <div className="search-container">
-                            <Search className="search-icon" size={18} />
-                            <input 
-                                type="text" 
-                                className="input pl-10" 
-                                placeholder="Search leads..." 
-                                value={search}
-                                onChange={(e) => setSearch(e.target.value)}
-                            />
+    const renderDashboardView = () => (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} key="dashboard">
+            {/* Stats */}
+            <div className="stats-grid" style={{ marginBottom: '40px' }}>
+                {stats.map((stat, idx) => (
+                    <motion.div 
+                        key={idx}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="card"
+                        style={{ padding: '20px' }}
+                    >
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <p style={{ fontSize: '0.625rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: '#64748b', marginBottom: '4px' }}>{stat.label}</p>
+                                <h3 style={{ fontSize: '1.875rem', fontWeight: 700, color: stat.color }}>{stat.count}</h3>
+                            </div>
+                            <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: `${stat.color}15`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <stat.icon size={20} color={stat.color} />
+                            </div>
                         </div>
-                        <div className="filter-group">
-                            {['All', 'New', 'Contacted', 'Converted'].map(s => (
-                                <button 
-                                    key={s}
-                                    onClick={() => setFilter(s)}
-                                    className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
-                                        filter === s ? 'bg-indigo-500/10 text-indigo-400' : 'text-text-dim hover:text-white'
-                                    }`}
-                                >
-                                    {s}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                    </motion.div>
+                ))}
+            </div>
 
-                    <div className="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Client</th>
-                                    <th>Source</th>
-                                    <th>Status</th>
-                                    <th>Lead Score</th>
-                                    <th>Added</th>
-                                    <th></th>
+            {/* Table Area */}
+            <div className="card" style={{ padding: '24px' }}>
+                <div className="filter-bar">
+                    <div className="search-container">
+                        <Search className="search-icon" size={18} />
+                        <input 
+                            type="text" 
+                            className="input" 
+                            style={{ paddingLeft: '40px' }}
+                            placeholder="Search leads..." 
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="filter-group">
+                        {['All', 'New', 'Contacted', 'Converted'].map(s => (
+                            <button 
+                                key={s}
+                                onClick={() => setFilter(s)}
+                                style={{
+                                    padding: '6px 12px', borderRadius: '6px', fontSize: '0.75rem',
+                                    fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                                    background: filter === s ? 'rgba(99,102,241,0.1)' : 'transparent',
+                                    color: filter === s ? '#818cf8' : '#64748b'
+                                }}
+                            >
+                                {s}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>Lead Score</th>
+                                <th>Added</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {filteredLeads.map((lead) => (
+                                <tr key={lead._id}>
+                                    <td style={{ minWidth: '200px' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                            <div style={{
+                                                width: '36px', height: '36px', borderRadius: '50%',
+                                                background: 'rgba(99,102,241,0.1)', display: 'flex',
+                                                alignItems: 'center', justifyContent: 'center',
+                                                color: '#818cf8', fontWeight: 700, fontSize: '0.8125rem'
+                                            }}>
+                                                {lead.name.charAt(0)}
+                                            </div>
+                                            <div>
+                                                <p style={{ fontWeight: 600, color: 'white', fontSize: '0.875rem' }}>{lead.name}</p>
+                                                <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{lead.email}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{lead.source}</span></td>
+                                    <td>
+                                        <span className={`badge badge-${lead.status.toLowerCase()}`}>
+                                            {lead.status}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style={{ width: '96px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '99px', overflow: 'hidden' }}>
+                                            <div style={{ height: '100%', background: '#6366f1', width: lead.status === 'Converted' ? '100%' : lead.status === 'Contacted' ? '60%' : '20%' }}></div>
+                                        </div>
+                                    </td>
+                                    <td style={{ color: '#64748b', fontSize: '0.75rem' }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                    <td style={{ textAlign: 'right' }}>
+                                        <button style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}>
+                                            <MoreHorizontal size={18} />
+                                        </button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <AnimatePresence>
-                                    {!loading && filteredLeads.map((lead, idx) => (
-                                        <motion.tr 
-                                            key={lead._id}
-                                            initial={{ opacity: 0 }}
-                                            animate={{ opacity: 1 }}
-                                            exit={{ opacity: 0 }}
-                                        >
-                                            <td style={{ minWidth: '200px' }}>
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold text-xs">
-                                                        {lead.name.charAt(0)}
-                                                    </div>
-                                                    <div>
-                                                        <p className="font-semibold text-white">{lead.name}</p>
-                                                        <p className="text-xs text-text-dim">{lead.email}</p>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td><p className="text-text-secondary text-sm">{lead.source}</p></td>
-                                            <td>
-                                                <span className={`badge badge-${lead.status.toLowerCase()}`}>
-                                                    {lead.status}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-indigo-500" style={{ width: lead.status === 'Converted' ? '100%' : lead.status === 'Contacted' ? '60%' : '20%' }}></div>
-                                                </div>
-                                            </td>
-                                            <td className="text-text-dim text-xs">{new Date(lead.createdAt).toLocaleDateString()}</td>
-                                            <td style={{ textAlign: 'right' }}>
-                                                <button className="text-text-dim hover:text-white transition-colors p-2">
-                                                    <MoreHorizontal size={18} />
-                                                </button>
-                                            </td>
-                                        </motion.tr>
-                                    ))}
-                                </AnimatePresence>
-                            </tbody>
-                        </table>
-                    </div>
+                            ))}
+                        </tbody>
+                    </table>
                 </div>
-            </motion.div>
-        );
+            </div>
+        </motion.div>
+    );
+
+    const renderContent = () => {
+        switch (activeView) {
+            case 'leads':
+                return <LeadsView key="leads" leads={leads} onUpdate={fetchLeads} />;
+            case 'analytics':
+                return <AnalyticsView key="analytics" leads={leads} />;
+            case 'settings':
+                return <SettingsView key="settings" />;
+            default:
+                return renderDashboardView();
+        }
     };
 
     return (
@@ -169,35 +204,90 @@ const Dashboard = () => {
             
             <main className="main-content">
                 {/* Header */}
-                <header className="flex justify-between items-center mb-10">
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px' }}>
                     <div>
-                        <h2 className="text-2xl font-bold text-white mb-1 uppercase tracking-tight" style={{ fontSize: '1.5rem' }}>
-                            {activeView === 'dashboard' ? 'Lead Overview' : activeView}
-                        </h2>
-                        <p className="text-text-secondary text-sm">
-                            {activeView === 'dashboard' 
-                                ? 'Manage and track your customer pipeline.' 
-                                : `Manage your ${activeView} settings and data.`}
-                        </p>
+                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white', marginBottom: '4px' }}>{currentHeader.title}</h2>
+                        <p style={{ fontSize: '0.875rem', color: '#94a3b8' }}>{currentHeader.sub}</p>
                     </div>
-                    <div className="header-actions">
-                        <button className="btn btn-ghost">
-                            <Filter size={18} />
-                            Filter
-                        </button>
-                        <button className="btn btn-primary" onClick={() => alert('Add Lead logic integrated with backend')}>
-                            <Plus size={18} />
-                            Add Lead
-                        </button>
-                    </div>
+                    {(activeView === 'dashboard' || activeView === 'leads') && (
+                        <div className="header-actions">
+                            <button className="btn btn-primary" onClick={() => setShowAddLead(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <Plus size={18} />
+                                Add Lead
+                            </button>
+                        </div>
+                    )}
                 </header>
 
                 {loading ? (
-                    <div className="flex items-center justify-center py-24">
-                        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '96px 0' }}>
+                        <div style={{ width: '48px', height: '48px', border: '4px solid rgba(99,102,241,0.2)', borderTop: '4px solid #6366f1', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
                     </div>
-                ) : renderContent()}
+                ) : (
+                    <AnimatePresence mode="wait">
+                        {renderContent()}
+                    </AnimatePresence>
+                )}
             </main>
+
+            {/* Add Lead Modal */}
+            <AnimatePresence>
+                {showAddLead && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100,
+                            backdropFilter: 'blur(4px)'
+                        }}
+                        onClick={() => setShowAddLead(false)}
+                    >
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="card"
+                            style={{ width: '100%', maxWidth: '440px', padding: '28px' }}
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'white' }}>Add New Lead</h3>
+                                <button onClick={() => setShowAddLead(false)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer' }}>
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleAddLead} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                                <div>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Full Name</label>
+                                    <input className="input" placeholder="e.g. John Doe" required value={newLead.name} onChange={(e) => setNewLead({...newLead, name: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Email</label>
+                                    <input className="input" type="email" placeholder="e.g. john@example.com" required value={newLead.email} onChange={(e) => setNewLead({...newLead, email: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Lead Source</label>
+                                    <select className="input" value={newLead.source} onChange={(e) => setNewLead({...newLead, source: e.target.value})} style={{ appearance: 'none' }}>
+                                        <option value="Website Form">Website Form</option>
+                                        <option value="Google Ads">Google Ads</option>
+                                        <option value="LinkedIn">LinkedIn</option>
+                                        <option value="Referral">Referral</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <button type="submit" className="btn btn-primary" disabled={addingLead} style={{ width: '100%', justifyContent: 'center', marginTop: '8px', padding: '12px' }}>
+                                    {addingLead ? 'Adding...' : 'Create Lead'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 };
