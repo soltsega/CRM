@@ -18,6 +18,18 @@ const LeadSchema = new mongoose.Schema({
             'Please add a valid email'
         ]
     },
+    phone: {
+        type: String,
+        default: ''
+    },
+    company: {
+        type: String,
+        default: ''
+    },
+    jobTitle: {
+        type: String,
+        default: ''
+    },
     source: {
         type: String,
         default: 'Website Form'

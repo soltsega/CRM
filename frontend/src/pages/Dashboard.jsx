@@ -14,7 +14,14 @@ const Dashboard = () => {
     const [filter, setFilter] = useState('All');
     const [activeView, setActiveView] = useState('dashboard');
     const [showAddLead, setShowAddLead] = useState(false);
-    const [newLead, setNewLead] = useState({ name: '', email: '', source: 'Website Form' });
+    const [newLead, setNewLead] = useState({ 
+        name: '', 
+        email: '', 
+        phone: '', 
+        company: '', 
+        jobTitle: '', 
+        source: 'Website Form' 
+    });
     const [addingLead, setAddingLead] = useState(false);
 
     const fetchLeads = useCallback(async () => {
@@ -37,7 +44,14 @@ const Dashboard = () => {
         setAddingLead(true);
         try {
             await api.post('/leads', newLead);
-            setNewLead({ name: '', email: '', source: 'Website Form' });
+            setNewLead({ 
+                name: '', 
+                email: '', 
+                phone: '', 
+                company: '', 
+                jobTitle: '', 
+                source: 'Website Form' 
+            });
             setShowAddLead(false);
             fetchLeads();
         } catch (err) {
@@ -49,7 +63,8 @@ const Dashboard = () => {
 
     const filteredLeads = leads.filter(lead => {
         const matchesSearch = lead.name.toLowerCase().includes(search.toLowerCase()) || 
-                             lead.email.toLowerCase().includes(search.toLowerCase());
+                             lead.email.toLowerCase().includes(search.toLowerCase()) ||
+                             (lead.company && lead.company.toLowerCase().includes(search.toLowerCase()));
         const matchesFilter = filter === 'All' || lead.status === filter;
         return matchesSearch && matchesFilter;
     });
@@ -152,7 +167,7 @@ const Dashboard = () => {
                             <thead>
                                 <tr>
                                     <th>Client</th>
-                                    <th>Source</th>
+                                    <th>Company</th>
                                     <th>Status</th>
                                     <th>Lead Score</th>
                                     <th>Added</th>
@@ -178,7 +193,12 @@ const Dashboard = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{lead.source}</span></td>
+                                        <td>
+                                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                <span style={{ color: '#f8fafc', fontSize: '0.875rem', fontWeight: 500 }}>{lead.company || 'Private'}</span>
+                                                <span style={{ color: '#64748b', fontSize: '0.75rem' }}>{lead.jobTitle || 'N/A'}</span>
+                                            </div>
+                                        </td>
                                         <td>
                                             <span className={`badge badge-${lead.status.toLowerCase()}`}>
                                                 {lead.status}
@@ -269,7 +289,7 @@ const Dashboard = () => {
                             animate={{ opacity: 1, scale: 1, y: 0 }}
                             exit={{ opacity: 0, scale: 0.95, y: 20 }}
                             className="card"
-                            style={{ width: '100%', maxWidth: '440px', padding: '28px' }}
+                            style={{ width: '100%', maxWidth: '500px', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -280,24 +300,45 @@ const Dashboard = () => {
                             </div>
 
                             <form onSubmit={handleAddLead} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                                <div>
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Full Name</label>
-                                    <input className="input" placeholder="e.g. John Doe" required value={newLead.name} onChange={(e) => setNewLead({...newLead, name: e.target.value})} />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Full Name</label>
+                                        <input className="input" placeholder="John Doe" required value={newLead.name} onChange={(e) => setNewLead({...newLead, name: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Email</label>
+                                        <input className="input" type="email" placeholder="john@example.com" required value={newLead.email} onChange={(e) => setNewLead({...newLead, email: e.target.value})} />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Email</label>
-                                    <input className="input" type="email" placeholder="e.g. john@example.com" required value={newLead.email} onChange={(e) => setNewLead({...newLead, email: e.target.value})} />
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Phone Number</label>
+                                        <input className="input" placeholder="+1 (555) 000-0000" value={newLead.phone} onChange={(e) => setNewLead({...newLead, phone: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Lead Source</label>
+                                        <select className="input" value={newLead.source} onChange={(e) => setNewLead({...newLead, source: e.target.value})} style={{ appearance: 'none' }}>
+                                            <option value="Website Form">Website Form</option>
+                                            <option value="Google Ads">Google Ads</option>
+                                            <option value="LinkedIn">LinkedIn</option>
+                                            <option value="Referral">Referral</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Lead Source</label>
-                                    <select className="input" value={newLead.source} onChange={(e) => setNewLead({...newLead, source: e.target.value})} style={{ appearance: 'none' }}>
-                                        <option value="Website Form">Website Form</option>
-                                        <option value="Google Ads">Google Ads</option>
-                                        <option value="LinkedIn">LinkedIn</option>
-                                        <option value="Referral">Referral</option>
-                                        <option value="Other">Other</option>
-                                    </select>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Company</label>
+                                        <input className="input" placeholder="Tech Corp" value={newLead.company} onChange={(e) => setNewLead({...newLead, company: e.target.value})} />
+                                    </div>
+                                    <div>
+                                        <label style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '6px' }}>Job Title</label>
+                                        <input className="input" placeholder="Project Manager" value={newLead.jobTitle} onChange={(e) => setNewLead({...newLead, jobTitle: e.target.value})} />
+                                    </div>
                                 </div>
+
                                 <button type="submit" className="btn btn-primary" disabled={addingLead} style={{ width: '100%', justifyContent: 'center', marginTop: '8px', padding: '12px' }}>
                                     {addingLead ? 'Adding...' : 'Create Lead'}
                                 </button>
