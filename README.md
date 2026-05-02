@@ -1,48 +1,87 @@
-# Premium Mini CRM
+# 🚀 Premium Mini CRM
 
-A high-performance Client Lead Management System (Mini CRM) designed for agencies, freelancers, and startups to track and convert leads efficiently.
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blueviolet?style=for-the-badge&logo=vercel)](https://crm-yh6c.vercel.app/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-![CRM Dashboard](file:///C:/Users/My%20Device/.gemini/antigravity/brain/3815c988-48b2-4160-94d1-66380513b422/crm_dashboard_leads_1777182679474.png)
+A high-performance, professional-grade CRM dashboard built with a modern glassmorphism aesthetic. Designed for speed, security, and a premium user experience.
+
+---
 
 ## ✨ Features
 
-- **Lead Capture & Storage:** Robust API to receive leads from any website form.
-- **Dynamic Dashboard:** Real-time metrics and lead status tracking (New, Contacted, Converted).
-- **Secure Admin Access:** JWT-protected dashboard with password hashing.
-- **Follow-Up Notes:** Add detailed interaction history for every lead.
-- **Premium Design:** Modern, sleek interface with glassmorphism and smooth animations.
+- **💎 Elite UI/UX:** Stunning dark-mode interface with glassmorphism effects and smooth Framer Motion animations.
+- **🔐 Secure Authentication:** Fully featured login and registration with credential masking and JWT protection.
+- **🛡️ Industrial Security:** Integrated with `helmet` for secure headers and `express-rate-limit` to prevent brute-force attacks.
+- **👥 Multi-User Isolation:** Each user has their own private pipeline. No data leaks, total privacy.
+- **📊 Smart Lead Management:** Track clients, companies, job titles, and lead scores in a real-time dashboard.
+- **📝 Activity Tracking:** Add notes and follow-ups to your leads to ensure no deal falls through the cracks.
+- **⚡ Built for Speed:** Powered by Vite and a lightweight, custom utility CSS system.
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React, Vite, Framer Motion, Lucide React, Axios.
-- **Backend:** Node.js, Express, JSON Web Tokens (JWT), BcryptJS.
-- **Database:** MongoDB (via Mongoose).
+### Frontend
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)
+![Lucide React](https://img.shields.io/badge/Lucide_Icons-FF6F61?style=for-the-badge&logo=lucide&logoColor=white)
+
+### Backend
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![JWT](https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens)
+
+---
 
 ## 🚀 Quick Start
 
-### 1. Prerequisites
-- MongoDB installed and running locally.
-- Node.js installed.
+### Prerequisites
+- Node.js (v18+)
+- MongoDB (Running locally or Atlas URI)
 
-### 2. Backend Setup
-```bash
-cd backend
-npm install
-node seeder.js # Creates default admin (admin/password123) and sample leads
-npm run start
-```
+### Installation
 
-### 3. Frontend Setup
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+1. **Clone the repo**
+   ```bash
+   git clone https://github.com/yourusername/mini-crm.git
+   ```
 
-## 🔑 Default Credentials
-- **Username:** `admin`
-- **Password:** `password123`
+2. **Setup Backend**
+   ```bash
+   cd backend
+   npm install
+   # Create a .env file with MONGO_URI and JWT_SECRET
+   node seeder.js # Seed initial admin user
+   npm run dev
+   ```
+
+3. **Setup Frontend**
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
 
 ---
-Built by Antigravity 🚀
+
+## 📊 Roadmap
+Check out the **[CRM_ROADMAP.md](./CRM_ROADMAP.md)** for detailed plans on:
+- 📈 Advanced Analytics with Recharts
+- 📬 Email Template Integration
+- 🔄 CSV Import/Export Engine
+- 🛡️ Role-Based Access Control (RBAC)
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Feel free to open issues or submit pull requests to help make this CRM even better.
+
+## 📄 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+Built with ❤️ for professional businesses. 
+**[View Live Demo](https://crm-yh6c.vercel.app/)**
