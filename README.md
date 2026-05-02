@@ -67,7 +67,6 @@ A high-performance, professional-grade CRM dashboard built with a modern glassmo
 ---
 
 ## Roadmap
-Check out the **[CRM_ROADMAP.md](./CRM_ROADMAP.md)** for detailed plans on:
 - Advanced Analytics with Recharts
 - Email Template Integration
 - CSV Import/Export Engine
@@ -83,5 +82,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-Built for professional businesses. 
 **[View Live Demo](https://crm-yh6c.vercel.app/)**
