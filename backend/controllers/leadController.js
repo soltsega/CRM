@@ -2,9 +2,12 @@ const Lead = require('../models/Lead');
 
 // @desc    Create a new lead
 // @route   POST /api/leads
-// @access  Public (usually)
+// @access  Private
 exports.createLead = async (req, res) => {
     try {
+        // Add user to req.body
+        req.body.user = req.user.id;
+        
         const lead = await Lead.create(req.body);
         res.status(201).json({ success: true, data: lead });
     } catch (error) {
@@ -12,12 +15,12 @@ exports.createLead = async (req, res) => {
     }
 };
 
-// @desc    Get all leads
+// @desc    Get all leads for logged in user
 // @route   GET /api/leads
-// @access  Private (Admin)
+// @access  Private
 exports.getLeads = async (req, res) => {
     try {
-        const leads = await Lead.find().sort('-createdAt');
+        const leads = await Lead.find({ user: req.user.id }).sort('-createdAt');
         res.status(200).json({ success: true, count: leads.length, data: leads });
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server Error' });
@@ -26,7 +29,7 @@ exports.getLeads = async (req, res) => {
 
 // @desc    Update lead status
 // @route   PATCH /api/leads/:id/status
-// @access  Private (Admin)
+// @access  Private
 exports.updateLeadStatus = async (req, res) => {
     try {
         const { status } = req.body;
@@ -34,14 +37,21 @@ exports.updateLeadStatus = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid status' });
         }
 
-        const lead = await Lead.findByIdAndUpdate(req.params.id, { status }, {
-            new: true,
-            runValidators: true
-        });
+        let lead = await Lead.findById(req.params.id);
 
         if (!lead) {
             return res.status(404).json({ success: false, message: 'Lead not found' });
         }
+
+        // Make sure user owns the lead
+        if (lead.user.toString() !== req.user.id) {
+            return res.status(401).json({ success: false, message: 'Not authorized to update this lead' });
+        }
+
+        lead = await Lead.findByIdAndUpdate(req.params.id, { status }, {
+            new: true,
+            runValidators: true
+        });
 
         res.status(200).json({ success: true, data: lead });
     } catch (error) {
@@ -51,7 +61,7 @@ exports.updateLeadStatus = async (req, res) => {
 
 // @desc    Add note to lead
 // @route   POST /api/leads/:id/notes
-// @access  Private (Admin)
+// @access  Private
 exports.addLeadNote = async (req, res) => {
     try {
         const { text } = req.body;
@@ -59,6 +69,11 @@ exports.addLeadNote = async (req, res) => {
 
         if (!lead) {
             return res.status(404).json({ success: false, message: 'Lead not found' });
+        }
+
+        // Make sure user owns the lead
+        if (lead.user.toString() !== req.user.id) {
+            return res.status(401).json({ success: false, message: 'Not authorized to update this lead' });
         }
 
         lead.notes.push({ text });

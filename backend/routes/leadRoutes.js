@@ -10,7 +10,7 @@ const {
 const { protect } = require('../middleware/auth');
 
 router.route('/')
-    .post(createLead)
+    .post(protect, createLead)
     .get(protect, getLeads);
 
 router.patch('/:id/status', protect, updateLeadStatus);

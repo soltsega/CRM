@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
-const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const connectDB = require('./config/db');
 
@@ -9,9 +10,17 @@ const app = express();
 // Connect to Database
 connectDB();
 
-// Middleware
+// Security Middleware
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+// Rate Limiting
+const limiter = rateLimit({
+	windowMs: 10 * 60 * 1000, // 10 mins
+	max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use('/api/', limiter);
 
 // Basic route
 app.get('/', (req, res) => {

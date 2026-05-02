@@ -13,15 +13,18 @@ const seedData = async () => {
         await User.deleteMany();
 
         // Create Admin
-        await User.create({
+        const admin = await User.create({
             username: 'admin',
+            email: 'admin@crm.com',
+            name: 'Admin User',
             password: 'password123'
         });
         console.log('Admin created (admin / password123)');
 
-        // Create Sample Leads
+        // Create Sample Leads linked to Admin
         const leads = [
             {
+                user: admin._id,
                 name: 'Alice Johnson',
                 email: 'alice@example.com',
                 source: 'Google Ads',
@@ -29,6 +32,7 @@ const seedData = async () => {
                 notes: [{ text: 'Expressed interest in the premium plan.' }]
             },
             {
+                user: admin._id,
                 name: 'Bob Smith',
                 email: 'bob@techcorp.io',
                 source: 'Referral',
@@ -36,6 +40,7 @@ const seedData = async () => {
                 notes: [{ text: 'First call done. Sent the brochure.' }]
             },
             {
+                user: admin._id,
                 name: 'Charlie Davis',
                 email: 'charlie@startup.co',
                 source: 'Website Form',
@@ -43,6 +48,7 @@ const seedData = async () => {
                 notes: [{ text: 'Signed the contract today!' }]
             },
             {
+                user: admin._id,
                 name: 'Diana Prince',
                 email: 'diana@amazon.com',
                 source: 'LinkedIn',

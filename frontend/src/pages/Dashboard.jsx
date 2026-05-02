@@ -129,57 +129,77 @@ const Dashboard = () => {
                 </div>
 
                 <div className="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Client</th>
-                                <th>Source</th>
-                                <th>Status</th>
-                                <th>Lead Score</th>
-                                <th>Added</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredLeads.map((lead) => (
-                                <tr key={lead._id}>
-                                    <td style={{ minWidth: '200px' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div style={{
-                                                width: '36px', height: '36px', borderRadius: '50%',
-                                                background: 'rgba(99,102,241,0.1)', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center',
-                                                color: '#818cf8', fontWeight: 700, fontSize: '0.8125rem'
-                                            }}>
-                                                {lead.name.charAt(0)}
-                                            </div>
-                                            <div>
-                                                <p style={{ fontWeight: 600, color: 'white', fontSize: '0.875rem' }}>{lead.name}</p>
-                                                <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{lead.email}</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{lead.source}</span></td>
-                                    <td>
-                                        <span className={`badge badge-${lead.status.toLowerCase()}`}>
-                                            {lead.status}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div style={{ width: '96px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '99px', overflow: 'hidden' }}>
-                                            <div style={{ height: '100%', background: '#6366f1', width: lead.status === 'Converted' ? '100%' : lead.status === 'Contacted' ? '60%' : '20%' }}></div>
-                                        </div>
-                                    </td>
-                                    <td style={{ color: '#64748b', fontSize: '0.75rem' }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
-                                    <td style={{ textAlign: 'right' }}>
-                                        <button style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}>
-                                            <MoreHorizontal size={18} />
-                                        </button>
-                                    </td>
+                    {filteredLeads.length === 0 ? (
+                        <div style={{ padding: '60px 0', textAlign: 'center' }}>
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="mx-auto"
+                                style={{ width: '80px', height: '80px', background: 'rgba(99,102,241,0.05)', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}
+                            >
+                                <LayoutDashboard size={40} color="#6366f1" />
+                            </motion.div>
+                            <h4 style={{ color: 'white', fontSize: '1.125rem', fontWeight: 600, marginBottom: '8px' }}>No leads found</h4>
+                            <p style={{ color: '#64748b', fontSize: '0.875rem', maxWidth: '300px', margin: '0 auto 24px' }}>
+                                Your pipeline is currently empty. Start by adding your first lead to see the analytics.
+                            </p>
+                            <button className="btn btn-primary" onClick={() => setShowAddLead(true)}>
+                                <Plus size={18} /> Add Your First Lead
+                            </button>
+                        </div>
+                    ) : (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Source</th>
+                                    <th>Status</th>
+                                    <th>Lead Score</th>
+                                    <th>Added</th>
+                                    <th></th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {filteredLeads.map((lead) => (
+                                    <tr key={lead._id}>
+                                        <td style={{ minWidth: '200px' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{
+                                                    width: '36px', height: '36px', borderRadius: '50%',
+                                                    background: 'rgba(99,102,241,0.1)', display: 'flex',
+                                                    alignItems: 'center', justifyContent: 'center',
+                                                    color: '#818cf8', fontWeight: 700, fontSize: '0.8125rem'
+                                                }}>
+                                                    {lead.name.charAt(0)}
+                                                </div>
+                                                <div>
+                                                    <p style={{ fontWeight: 600, color: 'white', fontSize: '0.875rem' }}>{lead.name}</p>
+                                                    <p style={{ fontSize: '0.75rem', color: '#64748b' }}>{lead.email}</p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><span style={{ color: '#94a3b8', fontSize: '0.875rem' }}>{lead.source}</span></td>
+                                        <td>
+                                            <span className={`badge badge-${lead.status.toLowerCase()}`}>
+                                                {lead.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div style={{ width: '96px', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '99px', overflow: 'hidden' }}>
+                                                <div style={{ height: '100%', background: '#6366f1', width: lead.status === 'Converted' ? '100%' : lead.status === 'Contacted' ? '60%' : '20%' }}></div>
+                                            </div>
+                                        </td>
+                                        <td style={{ color: '#64748b', fontSize: '0.75rem' }}>{new Date(lead.createdAt).toLocaleDateString()}</td>
+                                        <td style={{ textAlign: 'right' }}>
+                                            <button style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', padding: '4px' }}>
+                                                <MoreHorizontal size={18} />
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    )}
                 </div>
             </div>
         </motion.div>
