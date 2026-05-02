@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { motion } from 'framer-motion';
-import { Lock, Mail, Server, ArrowRight, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, Server, ArrowRight, Eye, EyeOff, User } from 'lucide-react';
 
 const Register = () => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +25,7 @@ const Register = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await api.post('/auth/register', { username, password });
+            const res = await api.post('/auth/register', { name, email, username, password });
             localStorage.setItem('token', res.data.token);
             navigate('/dashboard');
         } catch (err) {
@@ -57,7 +59,7 @@ const Register = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="w-full max-w-[400px] p-8 z-10"
+                className="w-full max-w-[450px] p-8 z-10"
             >
                 <div className="text-center mb-10">
                     <motion.div 
@@ -81,11 +83,42 @@ const Register = () => {
                         </motion.div>
                     )}
 
-                    <form onSubmit={handleRegister} className="space-y-5">
+                    <form onSubmit={handleRegister} className="space-y-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Full Name</label>
+                                <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
+                                    <input 
+                                        type="text"
+                                        className="input pl-10"
+                                        placeholder="John Doe"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Email Address</label>
+                                <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
+                                    <input 
+                                        type="email"
+                                        className="input pl-10"
+                                        placeholder="john@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="space-y-2">
                             <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Username</label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
+                                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
                                 <input 
                                     type={showUsername ? "text" : "password"}
                                     className="input pl-10 pr-10"
@@ -105,42 +138,44 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
-                                <input 
-                                    type={showPassword ? "text" : "password"}
-                                    className="input pl-10 pr-10"
-                                    placeholder="••••••••"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    autoComplete="new-password"
-                                />
-                                <button 
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim hover:text-text-secondary transition-colors"
-                                >
-                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                                </button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Password</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
+                                    <input 
+                                        type={showPassword ? "text" : "password"}
+                                        className="input pl-10 pr-10"
+                                        placeholder="••••••••"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-text-dim hover:text-text-secondary transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Confirm Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
-                                <input 
-                                    type={showPassword ? "text" : "password"}
-                                    className="input pl-10"
-                                    placeholder="••••••••"
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    required
-                                    autoComplete="new-password"
-                                />
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-text-dim uppercase tracking-wider block">Confirm</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-text-dim" size={16} />
+                                    <input 
+                                        type={showPassword ? "text" : "password"}
+                                        className="input pl-10"
+                                        placeholder="••••••••"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                </div>
                             </div>
                         </div>
 

@@ -6,8 +6,8 @@ const jwt = require('jsonwebtoken');
 // @access  Public (should be protected in production)
 exports.register = async (req, res) => {
     try {
-        const { username, password } = req.body;
-        const user = await User.create({ username, password });
+        const { username, email, name, password } = req.body;
+        const user = await User.create({ username, email, name, password });
         sendTokenResponse(user, 201, res);
     } catch (error) {
         res.status(400).json({ success: false, message: error.message });
