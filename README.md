@@ -1,4 +1,4 @@
-# 🚀 Premium Mini CRM
+# Premium Mini CRM
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-blueviolet?style=for-the-badge&logo=vercel)](https://crm-yh6c.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
@@ -7,19 +7,19 @@ A high-performance, professional-grade CRM dashboard built with a modern glassmo
 
 ---
 
-## ✨ Features
+## Features
 
-- **💎 Elite UI/UX:** Stunning dark-mode interface with glassmorphism effects and smooth Framer Motion animations.
-- **🔐 Secure Authentication:** Fully featured login and registration with credential masking and JWT protection.
-- **🛡️ Industrial Security:** Integrated with `helmet` for secure headers and `express-rate-limit` to prevent brute-force attacks.
-- **👥 Multi-User Isolation:** Each user has their own private pipeline. No data leaks, total privacy.
-- **📊 Smart Lead Management:** Track clients, companies, job titles, and lead scores in a real-time dashboard.
-- **📝 Activity Tracking:** Add notes and follow-ups to your leads to ensure no deal falls through the cracks.
-- **⚡ Built for Speed:** Powered by Vite and a lightweight, custom utility CSS system.
+- **Elite UI/UX:** Stunning dark-mode interface with glassmorphism effects and smooth Framer Motion animations.
+- **Secure Authentication:** Fully featured login and registration with credential masking and JWT protection.
+- **Industrial Security:** Integrated with `helmet` for secure headers and `express-rate-limit` to prevent brute-force attacks.
+- **Multi-User Isolation:** Each user has their own private pipeline. No data leaks, total privacy.
+- **Smart Lead Management:** Track clients, companies, job titles, and lead scores in a real-time dashboard.
+- **Activity Tracking:** Add notes and follow-ups to your leads to ensure no deal falls through the cracks.
+- **Built for Speed:** Powered by Vite and a lightweight, custom utility CSS system.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
@@ -35,7 +35,7 @@ A high-performance, professional-grade CRM dashboard built with a modern glassmo
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - Node.js (v18+)
@@ -66,22 +66,22 @@ A high-performance, professional-grade CRM dashboard built with a modern glassmo
 
 ---
 
-## 📊 Roadmap
+## Roadmap
 Check out the **[CRM_ROADMAP.md](./CRM_ROADMAP.md)** for detailed plans on:
-- 📈 Advanced Analytics with Recharts
-- 📬 Email Template Integration
-- 🔄 CSV Import/Export Engine
-- 🛡️ Role-Based Access Control (RBAC)
+- Advanced Analytics with Recharts
+- Email Template Integration
+- CSV Import/Export Engine
+- Role-Based Access Control (RBAC)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 Contributions are welcome! Feel free to open issues or submit pull requests to help make this CRM even better.
 
-## 📄 License
+## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-Built with ❤️ for professional businesses. 
+Built for professional businesses. 
 **[View Live Demo](https://crm-yh6c.vercel.app/)**
